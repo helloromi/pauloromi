@@ -1,17 +1,65 @@
-import type { Project } from "@/data/projects";
+"use client";
+
+import { useColorSweep } from "@/components/ColorSweep";
+import type { IndexItem, IndexItemColor } from "@/data/index-item";
+import { prefersReducedMotion } from "@/lib/motion";
+import { useState, type MouseEvent } from "react";
 
 type ProjectCardProps = {
-  project: Project;
+  item: IndexItem;
   index: number;
 };
 
-export function ProjectCard({ project, index }: ProjectCardProps) {
+function PlayfulTitle({ title }: { title: string }) {
+  return (
+    <h2 className="title-playful font-serif text-2xl leading-snug transition-transform duration-300 ease-out group-hover:translate-x-2 sm:text-4xl">
+      {title.split("").map((char, i) => (
+        <span
+          key={`${char}-${i}`}
+          className="title-playful-letter"
+          style={{ "--letter-i": i } as React.CSSProperties}
+        >
+          {char === " " ? "\u00a0" : char}
+        </span>
+      ))}
+    </h2>
+  );
+}
+
+export function ProjectCard({ item, index }: ProjectCardProps) {
+  const { triggerSweep } = useColorSweep();
+  const [activating, setActivating] = useState(false);
+  const color: IndexItemColor = item.color ?? "blue";
+
+  async function handleClick(event: MouseEvent<HTMLAnchorElement>) {
+    if (
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey ||
+      event.button !== 0
+    ) {
+      return;
+    }
+
+    if (prefersReducedMotion()) {
+      return;
+    }
+
+    event.preventDefault();
+    setActivating(true);
+    await triggerSweep(color, event.clientX, event.clientY);
+    window.open(item.url, "_blank", "noopener,noreferrer");
+    setActivating(false);
+  }
+
   return (
     <a
-      href={project.url}
+      href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block border-t border-line py-8 transition-colors duration-300 hover:bg-cream-deep sm:py-10"
+      onClick={handleClick}
+      className={`group block border-t border-line py-8 transition-colors duration-300 hover:bg-cream-deep sm:py-10${activating ? " project-card-activating" : ""}`}
     >
       <div className="mx-auto flex max-w-4xl items-baseline gap-5 px-6 sm:gap-10 sm:px-10">
         <span className="font-serif text-sm text-ink-soft tabular-nums">
@@ -20,22 +68,20 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
 
         <div className="flex-1">
           <div className="flex items-baseline justify-between gap-4">
-            <h2 className="font-serif text-2xl leading-snug transition-transform duration-300 ease-out group-hover:translate-x-2 sm:text-4xl">
-              {project.title}
-            </h2>
+            <PlayfulTitle title={item.title} />
             <span
               aria-hidden
-              className="shrink-0 font-serif text-xl text-terracotta opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:opacity-100 sm:text-2xl -translate-x-2"
+              className="shrink-0 font-serif text-xl text-blue opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:opacity-100 sm:text-2xl -translate-x-2"
             >
               &rarr;
             </span>
           </div>
           <p className="mt-2 max-w-md text-sm leading-relaxed text-ink-soft sm:text-base">
-            {project.description}
+            {item.description}
           </p>
           <div className="label mt-4 flex gap-6 text-ink-soft">
-            <span>{project.tag}</span>
-            <span>{project.year}</span>
+            <span>{item.tag}</span>
+            <span>{item.year}</span>
           </div>
         </div>
       </div>

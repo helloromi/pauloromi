@@ -1,15 +1,13 @@
-export type Project = {
-  /** Titre affiché dans l'index */
-  title: string;
-  /** Une phrase courte, ton éditorial */
-  description: string;
-  /** URL externe du projet (ouvre dans un nouvel onglet) */
-  url: string;
-  /** Étiquette courte : type de projet, médium… */
-  tag: string;
-  /** Année de mise en ligne */
-  year: string;
-};
+import {
+  indexItemColors,
+  type IndexItem,
+  type IndexItemColor,
+} from "./index-item";
+
+export type ProjectColor = IndexItemColor;
+export type Project = IndexItem;
+
+export const projectColors = indexItemColors;
 
 /**
  * Pour ajouter un projet, ajouter une entrée ici.
@@ -17,17 +15,11 @@ export type Project = {
  */
 export const projects: Project[] = [
   {
-    title: "Premier projet de démo",
-    description: "Une petite expérience web qui ne sert à rien, mais bien.",
-    url: "https://example.com",
+    title: "Côté-Cour",
+    description: "Une petite web app pour apprendre ses textes de théâtre.",
+    url: "https://www.cote-cour.studio/landing",
     tag: "Expérience",
     year: "2026",
-  },
-  {
-    title: "Second projet de démo",
-    description: "Un outil minuscule, fabriqué un dimanche pluvieux.",
-    url: "https://example.org",
-    tag: "Outil",
-    year: "2026",
+    color: "blue",
   },
 ];

@@ -1,13 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  /* Palette éditoriale chaleureuse */
-  --cream: #f6f1e7;
-  --cream-deep: #efe7d8;
-  --ink: #211d18;
-  --ink-soft: #6f675b;
-  --terracotta: #b4542a;
-  --line: #d9cfbc;
+  /* Palette principale */
+  --cream: #ffffff;
+  --cream-deep: #f5f8fa;
+  --ink: #1a2e3b;
+  --ink-soft: #5a7180;
+  --blue: #2779a7;
+  --pink: #ff9398;
+  --line: #e4edf2;
 }
 
 @theme inline {
@@ -15,7 +16,8 @@
   --color-cream-deep: var(--cream-deep);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
-  --color-terracotta: var(--terracotta);
+  --color-blue: var(--blue);
+  --color-pink: var(--pink);
   --color-line: var(--line);
   --font-serif: var(--font-fraunces);
   --font-sans: var(--font-instrument);
@@ -28,7 +30,7 @@ body {
 }
 
 ::selection {
-  background: var(--terracotta);
+  background: var(--blue);
   color: var(--cream);
 }
 
@@ -87,4 +89,262 @@ body {
 
 .link-underline:hover {
   background-size: 100% 1px;
+}
+
+/* Couleurs de sweep par projet */
+.sweep-blue { background-color: var(--blue); }
+.sweep-pink { background-color: var(--pink); }
+
+/* Transition circulaire au clic — part du curseur */
+.color-sweep-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.color-sweep-circle {
+  position: absolute;
+  width: 200vmax;
+  height: 200vmax;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: color-sweep-expand 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform;
+}
+
+@keyframes color-sweep-expand {
+  to {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.project-card-activating {
+  background: var(--cream-deep);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .color-sweep-overlay {
+    display: none;
+  }
+}
+
+/* Typo playful — axes Fraunces WONK / SOFT */
+.headline-word {
+  display: inline-block;
+  cursor: pointer;
+  transition:
+    font-variation-settings 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.25s ease;
+  font-variation-settings: "WONK" 0, "SOFT" 0;
+}
+
+.headline-word:hover {
+  font-variation-settings: "WONK" 1, "SOFT" 100;
+  transform: rotate(-2deg) scale(1.04);
+  color: var(--blue);
+}
+
+.title-playful {
+  font-variation-settings: "WONK" 0, "SOFT" 0;
+  transition:
+    font-variation-settings 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    letter-spacing 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.group:hover .title-playful {
+  font-variation-settings: "WONK" 1, "SOFT" 50;
+  letter-spacing: 0.02em;
+}
+
+.title-playful-letter {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--letter-i, 0) * 25ms);
+}
+
+.group:hover .title-playful-letter {
+  transform: translateY(-3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .headline-word:hover {
+    transform: none;
+  }
+
+  .group:hover .title-playful-letter {
+    transform: none;
+  }
+
+  .breathing-blob-inner {
+    animation: none;
+  }
+}
+
+/* Blob respirant — confiné au hero */
+.breathing-blob-outer {
+  --blob-x: 0px;
+  --blob-y: 0px;
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(calc(-50% + var(--blob-x)), calc(-50% + var(--blob-y)));
+  will-change: transform;
+}
+
+.breathing-blob-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(18rem, 45vw, 32rem);
+  height: clamp(18rem, 45vw, 32rem);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(39, 121, 167, 0.75) 0%,
+    rgba(39, 121, 167, 0.45) 38%,
+    rgba(39, 121, 167, 0.15) 58%,
+    transparent 72%
+  );
+  filter: blur(26px);
+  animation: blob-breathe 3s ease-in-out infinite;
+}
+
+.breathing-blob-inner--secondary {
+  width: clamp(12rem, 30vw, 22rem);
+  height: clamp(12rem, 30vw, 22rem);
+  background: radial-gradient(
+    circle,
+    rgba(39, 121, 167, 0.55) 0%,
+    rgba(61, 143, 184, 0.3) 48%,
+    transparent 74%
+  );
+  filter: blur(22px);
+  animation-delay: -1.5s;
+  animation-duration: 3.5s;
+}
+
+@keyframes blob-breathe {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.95;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.14);
+    opacity: 1;
+  }
+}
+
+/* Bandeau contact en bas */
+.contact-banner {
+  position: relative;
+  overflow: hidden;
+  background: var(--cream);
+}
+
+.contact-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 100% 70% at 50% 110%,
+    #2779a7 0%,
+    #3d8fb8 22%,
+    rgba(255, 147, 152, 0.45) 45%,
+    rgba(255, 147, 152, 0.12) 65%,
+    transparent 82%
+  );
+  pointer-events: none;
+}
+
+.contact-banner-cta {
+  --x: 50%;
+  --y: 50%;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  overflow: hidden;
+  padding: 0.9375rem 1.875rem;
+  border: 1.5px solid var(--ink);
+  border-radius: 9999px;
+  background: var(--ink);
+  color: var(--cream);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  box-shadow:
+    0 2px 0 rgba(26, 46, 59, 0.06),
+    0 6px 28px rgba(26, 46, 59, 0.15);
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.4s ease;
+}
+
+.contact-banner-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--pink);
+  clip-path: circle(0% at var(--x) var(--y));
+  transition: clip-path 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.contact-banner-cta span {
+  position: relative;
+  z-index: 1;
+}
+
+.contact-banner-cta-arrow {
+  display: inline-block;
+  font-size: 1.125rem;
+  line-height: 1;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.contact-banner-cta.is-hovered {
+  transform: translateY(-3px);
+  border-color: var(--pink);
+  box-shadow:
+    0 4px 0 rgba(26, 46, 59, 0.04),
+    0 14px 40px rgba(255, 147, 152, 0.35);
+}
+
+.contact-banner-cta.is-hovered::before {
+  clip-path: circle(150% at var(--x) var(--y));
+}
+
+.contact-banner-cta.is-hovered .contact-banner-cta-arrow {
+  transform: translateX(5px);
+}
+
+.contact-banner-cta:active {
+  transform: translateY(-1px);
+  transition-duration: 0.15s;
+}
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  background: var(--cream);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-banner-cta.is-hovered {
+    transform: none;
+  }
+
+  .contact-banner-cta::before {
+    display: none;
+  }
+
+  .contact-banner-cta.is-hovered .contact-banner-cta-arrow {
+    transform: none;
+  }
 }

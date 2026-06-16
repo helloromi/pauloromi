@@ -18,6 +18,15 @@ export const metadata: Metadata = {
   title: "Petites choses — un index de mini-projets",
   description:
     "Un cabinet de curiosités numérique : des petits projets web, des expériences et des outils minuscules, rassemblés au même endroit.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
   openGraph: {
     title: "Petites choses",
     description:
