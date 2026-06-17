@@ -339,6 +339,25 @@ body {
   will-change: transform;
 }
 
+/* Sillage d'écume derrière la planche — opacité + longueur ∝ vitesse (--foam,
+   piloté en JS par le boost et le mode). Toujours un peu visible. */
+.pixel-surfer-wake {
+  position: absolute;
+  right: 100%;
+  bottom: 9px;
+  margin-right: 1px;
+  width: 4px;
+  height: 4px;
+  background: #dff0fa;
+  transform-origin: right center;
+  transform: scaleX(calc(0.5 + var(--foam, 0.3) * 1.1));
+  opacity: var(--foam, 0.3);
+  box-shadow:
+    -7px 0 0 #cfe7f3,
+    -13px 1px 0 #e3f1f8,
+    -19px 0 0 rgba(207, 231, 243, 0.55);
+}
+
 /* Bulle de dialogue pixel */
 .pixel-surfer-bubble {
   position: absolute;

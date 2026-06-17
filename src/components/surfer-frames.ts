@@ -15,34 +15,36 @@ export const SURFER_COLORS: Record<string, string> = {
   w: "#eaf7ff",
 };
 
-// ── Rame (allongé sur la planche) ────────────────────────────────────────────
+// ── Rame (allongé sur la planche, buste relevé façon cobra) ──────────────────
+// Bras avant qui plonge dans l'eau (avec écume), jambes fondues en une traîne.
 const paddleA = [
   "..............",
   "..............",
   "..............",
   "..............",
-  ".........oo...",
-  "........osko..",
-  "...oooooooo...",
-  "..ooooooooo...",
-  ".oo......oo...",
-  ".o........ow..",
-  "...........w..",
+  ".........osk..",
+  ".oooooooooo...",
+  ".oooooooo.....",
+  "........oooo..",
+  "...........ww.",
+  "............w.",
+  "..............",
   ".bbbbbbbbbbbb.",
   "..............",
 ];
 
+// Bras avant relevé en récupération (pas d'éclaboussure), il plane.
 const paddleB = [
   "..............",
   "..............",
   "..............",
   "..............",
-  ".........oo...",
-  "........osko..",
-  "...ooooooooo..",
-  "..ooooooooo...",
-  ".oo.......o...",
-  ".o............",
+  ".........osk..",
+  ".oooooooooo...",
+  ".oooooooo.....",
+  "..........o...",
+  "..............",
+  "..............",
   "..............",
   ".bbbbbbbbbbbb.",
   "..............",

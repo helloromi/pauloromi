@@ -192,6 +192,11 @@ export function PixelSurfer() {
   // Modes : "paddle" (allongé, il rame) → "surf" (debout, bascule) au 1er clic.
   const [mode, setMode] = useState<"paddle" | "surf">("paddle");
   const [frame, setFrame] = useState(0);
+  // Écume de base selon le mode (rame = lent → peu ; surf = plus rapide → plus).
+  const foamBaseRef = useRef(0.28);
+  useEffect(() => {
+    foamBaseRef.current = mode === "surf" ? 0.5 : 0.28;
+  }, [mode]);
 
   useEffect(() => {
     reduced.current = prefersReducedMotion();
@@ -248,6 +253,13 @@ export function PixelSurfer() {
       phase += FRONT_LAYER.dir * FRONT_LAYER.pxps * boost * dt;
       phase %= tilePx;
       wave!.style.backgroundPositionX = `${phase}px`;
+
+      // Écume derrière le surfeur : base (selon le mode) + supplément au boost.
+      const foam = Math.max(
+        0.15,
+        Math.min(1, foamBaseRef.current + (boost - 1) * 0.5),
+      );
+      scene!.style.setProperty("--foam", foam.toFixed(3));
 
       const centerX = scene!.clientWidth * 0.16 + 32; // centre du surfeur
       const cellX = (centerX - phase) / CELL;
@@ -374,6 +386,7 @@ export function PixelSurfer() {
               {bubble.text}
             </span>
           )}
+          <span className="pixel-surfer-wake" aria-hidden />
           <span className="pixel-surfer-bob">
             <SurferSprite grid={currentGrid} />
           </span>
