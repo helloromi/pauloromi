@@ -31,7 +31,7 @@ export default function Home() {
                     href={profile.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="link-underline transition-colors hover:text-blue"
+                    className="link-underline tap-expand transition-colors hover:text-blue"
                   >
                     LinkedIn
                   </a>
@@ -39,7 +39,7 @@ export default function Home() {
                     href={profile.resume}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="link-underline transition-colors hover:text-pink"
+                    className="link-underline tap-expand transition-colors hover:text-pink"
                   >
                     CV
                   </a>

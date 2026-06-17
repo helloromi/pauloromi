@@ -91,6 +91,30 @@ body {
   background-size: 100% 1px;
 }
 
+/* Agrandit la zone tactile (≈ 44px) sans changer la mise en page ni le
+   soulignement : un pseudo-élément transparent débordant, cliquable. */
+.tap-expand {
+  position: relative;
+}
+
+.tap-expand::after {
+  content: "";
+  position: absolute;
+  inset: -14px -10px;
+}
+
+/* Focus clavier — cohérent sur tous les éléments interactifs. */
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* Les cartes pleine largeur : anneau en retrait pour rester visible. */
+.card-link:focus-visible {
+  outline-offset: -3px;
+}
+
 /* Couleurs de sweep par projet */
 .sweep-blue { background-color: var(--blue); }
 .sweep-pink { background-color: var(--pink); }
@@ -157,6 +181,12 @@ body {
 .group:hover .title-playful {
   font-variation-settings: "WONK" 1, "SOFT" 50;
   letter-spacing: 0.02em;
+}
+
+/* Un mot = un bloc insécable : la ligne ne se coupe qu'entre les mots. */
+.title-playful-word {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .title-playful-letter {

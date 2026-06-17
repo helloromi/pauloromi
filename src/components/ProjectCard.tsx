@@ -3,7 +3,7 @@
 import { useColorSweep } from "@/components/ColorSweep";
 import type { IndexItem, IndexItemColor } from "@/data/index-item";
 import { prefersReducedMotion } from "@/lib/motion";
-import { useState, type MouseEvent } from "react";
+import { Fragment, useState, type MouseEvent } from "react";
 
 type ProjectCardProps = {
   item: IndexItem;
@@ -11,16 +11,33 @@ type ProjectCardProps = {
 };
 
 function PlayfulTitle({ title }: { title: string }) {
+  const words = title.split(" ");
+  // Index de lettre continu sur tout le titre \u2192 la vague de survol cascade
+  // d'un mot \u00e0 l'autre.
+  let letterIndex = 0;
+
   return (
     <h2 className="title-playful font-serif text-2xl leading-snug transition-transform duration-300 ease-out group-hover:translate-x-2 sm:text-4xl">
-      {title.split("").map((char, i) => (
-        <span
-          key={`${char}-${i}`}
-          className="title-playful-letter"
-          style={{ "--letter-i": i } as React.CSSProperties}
-        >
-          {char === " " ? "\u00a0" : char}
-        </span>
+      {words.map((word, wi) => (
+        <Fragment key={`${word}-${wi}`}>
+          {/* Chaque mot reste ins\u00e9cable : la ligne ne peut se couper qu'entre
+              les mots, jamais au milieu (cf. bug de c\u00e9sure mobile). */}
+          <span className="title-playful-word">
+            {word.split("").map((char, ci) => {
+              const i = letterIndex++;
+              return (
+                <span
+                  key={`${char}-${ci}`}
+                  className="title-playful-letter"
+                  style={{ "--letter-i": i } as React.CSSProperties}
+                >
+                  {char}
+                </span>
+              );
+            })}
+          </span>
+          {wi < words.length - 1 ? " " : null}
+        </Fragment>
       ))}
     </h2>
   );
@@ -64,7 +81,7 @@ export function ProjectCard({ item, index }: ProjectCardProps) {
       target="_blank"
       rel="noopener noreferrer"
       onClick={handleClick}
-      className={`group block border-t border-line py-8 transition-colors duration-300 hover:bg-cream-deep sm:py-10${activating ? " project-card-activating" : ""}`}
+      className={`card-link group block border-t border-line py-8 transition-colors duration-300 hover:bg-cream-deep sm:py-10${activating ? " project-card-activating" : ""}`}
     >
       <div className="mx-auto flex max-w-4xl items-baseline gap-5 px-6 sm:gap-10 sm:px-10">
         <span className="font-serif text-sm text-ink-soft tabular-nums">

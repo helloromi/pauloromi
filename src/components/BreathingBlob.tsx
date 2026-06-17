@@ -11,6 +11,15 @@ export function BreathingBlob() {
   useEffect(() => {
     if (prefersReducedMotion()) return;
 
+    // Pointeur fin (souris) → l'orbe suit le curseur.
+    // Sinon (mobile / tactile) → dérive aléatoire et lente, bornée autour de
+    // sa position de repos pour rester « là où il est » plutôt que de
+    // traverser l'écran.
+    const finePointer =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const ease = finePointer ? 0.15 : 0.05;
+
     function onMove(event: MouseEvent) {
       target.current = {
         x: event.clientX / window.innerWidth,
@@ -18,11 +27,19 @@ export function BreathingBlob() {
       };
     }
 
+    function wander() {
+      target.current = {
+        x: 0.3 + Math.random() * 0.4, // 0.30 → 0.70
+        y: 0.26 + Math.random() * 0.28, // 0.26 → 0.54
+      };
+    }
+
     let frame = 0;
+    let wanderTimer = 0;
 
     function animate() {
-      current.current.x += (target.current.x - current.current.x) * 0.15;
-      current.current.y += (target.current.y - current.current.y) * 0.15;
+      current.current.x += (target.current.x - current.current.x) * ease;
+      current.current.y += (target.current.y - current.current.y) * ease;
 
       if (outerRef.current) {
         const offsetX = (current.current.x - 0.5) * 130;
@@ -34,17 +51,27 @@ export function BreathingBlob() {
       frame = requestAnimationFrame(animate);
     }
 
-    window.addEventListener("mousemove", onMove, { passive: true });
+    if (finePointer) {
+      window.addEventListener("mousemove", onMove, { passive: true });
+    } else {
+      wander();
+      wanderTimer = window.setInterval(wander, 2000);
+    }
+
     frame = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener("mousemove", onMove);
       cancelAnimationFrame(frame);
+      window.clearInterval(wanderTimer);
     };
   }, []);
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
+    <div
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+      aria-hidden
+    >
       <div ref={outerRef} className="breathing-blob-outer">
         <div className="breathing-blob-inner" />
         <div className="breathing-blob-inner breathing-blob-inner--secondary" />
