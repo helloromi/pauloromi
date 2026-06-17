@@ -6,9 +6,9 @@ import type { IndexItem } from "./index-item";
  */
 export const writing: IndexItem[] = [
   {
-    title: "Personne ne sait ce que je fais dans mon asso",
+    title: "Personne ne sait ce que je fais !",
     description:
-      "Sur un métier sans nom stable : outils, process, automatisation — et la difficulté d'expliquer ce qu'on fait quand tout fonctionne.",
+      "Sur mon métier sans nom défini.",
     url: "https://pauloromi.substack.com/p/personne-ne-sait-ce-que-je-fais-dans",
     tag: "Essai",
     year: "2026",
