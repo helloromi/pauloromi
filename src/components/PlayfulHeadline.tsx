@@ -37,24 +37,14 @@ export function PlayfulHeadline() {
       className="fade-up mt-6 max-w-2xl font-serif text-4xl leading-[1.15] sm:text-6xl"
       style={{ "--stagger": 1 } as React.CSSProperties}
     >
+      {/* Le sweep coloré au clic est purement décoratif : on le laisse à la
+          souris et on n'expose pas 5 « boutons » aux lecteurs d'écran — le
+          titre doit se lire comme un simple titre. */}
       {headlineWords.map((word, i) => (
         <span key={`${word}-${i}`}>
           <span
             className="headline-word"
             onClick={(event) => handleWordClick(event, nextColor())}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                const rect = event.currentTarget.getBoundingClientRect();
-                void triggerSweep(
-                  nextColor(),
-                  rect.left + rect.width / 2,
-                  rect.top + rect.height / 2,
-                );
-              }
-            }}
           >
             {word}
           </span>{" "}

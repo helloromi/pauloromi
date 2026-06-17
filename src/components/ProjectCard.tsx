@@ -48,9 +48,14 @@ export function ProjectCard({ item, index }: ProjectCardProps) {
 
     event.preventDefault();
     setActivating(true);
-    await triggerSweep(color, event.clientX, event.clientY);
-    window.open(item.url, "_blank", "noopener,noreferrer");
-    setActivating(false);
+    try {
+      await triggerSweep(color, event.clientX, event.clientY);
+    } finally {
+      // Garantir l'ouverture même si l'animation échoue, et ne jamais laisser
+      // la carte bloquée en surbrillance. rel=noopener → pas de tabnabbing.
+      setActivating(false);
+      window.open(item.url, "_blank", "noopener,noreferrer");
+    }
   }
 
   return (

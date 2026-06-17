@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Instrument_Sans } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -27,12 +28,23 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   manifest: "/site.webmanifest",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Petites choses",
     description:
       "Un cabinet de curiosités numérique : des petits projets web, rassemblés au même endroit.",
+    url: "/",
+    siteName: "Paul Oromi",
     type: "website",
     locale: "fr_FR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Petites choses",
+    description:
+      "Un cabinet de curiosités numérique : des petits projets web, rassemblés au même endroit.",
   },
 };
 
@@ -46,7 +58,10 @@ export default function RootLayout({
       lang="fr"
       className={`${fraunces.variable} ${instrumentSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
