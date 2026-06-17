@@ -1,38 +1,15 @@
 "use client";
 
 import { prefersReducedMotion } from "@/lib/motion";
-import { useEffect, useRef, useState } from "react";
-
-/**
- * Petit surfeur en pixel art.
- * - '.' transparent
- * - 'o' combinaison / corps (ink)
- * - 's' peau
- * - 'k' œil (ink sur peau)
- * - 'b' planche (pink)
- */
-const SPRITE = [
-  "..............",
-  "....oo........",
-  "...osso.......",
-  "...osko.......",
-  "....oo........",
-  ".oooooooo.....",
-  "...oooo.......",
-  "...oooo.......",
-  "...oooo.......",
-  "...o..o.......",
-  "..o....o......",
-  "..o....o......",
-  ".bbbbbbbbbb...",
-];
-
-const COLORS: Record<string, string> = {
-  o: "var(--ink)",
-  s: "#ffe0c4",
-  k: "var(--ink)",
-  b: "var(--pink)",
-};
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  PADDLE_SEQUENCE,
+  SURF_SEQUENCE,
+  SURFER_COLORS,
+  SURFER_FRAMES,
+  TRICK_SEQUENCES,
+  type SurferFrameName,
+} from "@/components/surfer-frames";
 
 const CELL = 4; // taille d'un pixel (px)
 const BOOST_MS = 900;
@@ -177,11 +154,11 @@ function frontCrestCell(cellX: number): number {
   return FRONT.baseline - (FRONT.amp * v) / FRONT_NORM;
 }
 
-function SurferSprite() {
+function SurferSprite({ grid }: { grid: string[] }) {
   const rects: React.ReactElement[] = [];
-  SPRITE.forEach((row, y) => {
+  grid.forEach((row, y) => {
     for (let x = 0; x < row.length; x++) {
-      const fill = COLORS[row[x]];
+      const fill = SURFER_COLORS[row[x]];
       if (!fill) continue;
       rects.push(
         <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} fill={fill} />,
@@ -212,12 +189,16 @@ export function PixelSurfer() {
   const [bubble, setBubble] = useState<{ text: string; id: number } | null>(null);
   const bubbleId = useRef(0);
   const reduced = useRef(false);
+  // Modes : "paddle" (allongé, il rame) → "surf" (debout, bascule) au 1er clic.
+  const [mode, setMode] = useState<"paddle" | "surf">("paddle");
+  const [frame, setFrame] = useState(0);
 
   useEffect(() => {
     reduced.current = prefersReducedMotion();
 
     if (reduced.current) {
       setSurfing(true);
+      setMode("surf");
       return;
     }
 
@@ -283,23 +264,67 @@ export function PixelSurfer() {
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  function handleTrick() {
-    if (reduced.current || trick) return;
-    const pick = TRICKS[Math.floor(Math.random() * TRICKS.length)];
-    setTrick(pick);
-    if (pick === "boost") {
-      boostStartRef.current = performance.now();
-      setBoosting(true);
-    }
+  // Séquence de frames active : un trick prime, sinon le mode courant.
+  const sequence = useMemo<SurferFrameName[]>(() => {
+    if (trick && TRICK_SEQUENCES[trick]) return TRICK_SEQUENCES[trick];
+    return mode === "paddle" ? PADDLE_SEQUENCE : SURF_SEQUENCE;
+  }, [mode, trick]);
 
-    // Bulle de dialogue.
-    const pool = pick === "wipeout" ? WIPEOUT_CHEERS : CHEERS;
-    const text = pool[Math.floor(Math.random() * pool.length)];
+  // Cadence du folioscope (ms / frame) selon ce qu'il fait.
+  const frameMs = trick
+    ? trick === "wipeout"
+      ? 110
+      : 200
+    : mode === "paddle"
+      ? 260
+      : 190;
+
+  // Défilement des frames. Figé si reduced-motion ou pose unique (le reset
+  // d'index se fait dans les handlers de clic, pas ici).
+  useEffect(() => {
+    if (reduced.current || sequence.length <= 1) return;
+    const id = window.setInterval(
+      () => setFrame((f) => (f + 1) % sequence.length),
+      frameMs,
+    );
+    return () => window.clearInterval(id);
+  }, [sequence, frameMs]);
+
+  const currentGrid =
+    SURFER_FRAMES[sequence[frame % sequence.length] ?? sequence[0]];
+
+  function showBubble(text: string) {
     const id = (bubbleId.current += 1);
     setBubble({ text, id });
     window.setTimeout(() => {
       setBubble((prev) => (prev?.id === id ? null : prev));
     }, BUBBLE_MS);
+  }
+
+  // 1er clic : il se met debout. Clics suivants : tricks.
+  function handleSurferClick() {
+    if (reduced.current) return;
+    if (mode === "paddle") {
+      setMode("surf");
+      setFrame(0);
+      showBubble("C'est parti !");
+      return;
+    }
+    handleTrick();
+  }
+
+  function handleTrick() {
+    if (trick) return;
+    const pick = TRICKS[Math.floor(Math.random() * TRICKS.length)];
+    setTrick(pick);
+    setFrame(0);
+    if (pick === "boost") {
+      boostStartRef.current = performance.now();
+      setBoosting(true);
+    }
+
+    const pool = pick === "wipeout" ? WIPEOUT_CHEERS : CHEERS;
+    showBubble(pool[Math.floor(Math.random() * pool.length)]);
     window.setTimeout(() => {
       setTrick(null);
       if (pick === "boost") setBoosting(false);
@@ -339,7 +364,7 @@ export function PixelSurfer() {
       <button
         type="button"
         className={`pixel-surfer${trick && trick !== "boost" ? ` is-${trick}` : ""}`}
-        onClick={handleTrick}
+        onClick={handleSurferClick}
         aria-label="Surfeur"
         style={{ bottom: `${SURFER_BOTTOM}px` }}
       >
@@ -350,7 +375,7 @@ export function PixelSurfer() {
             </span>
           )}
           <span className="pixel-surfer-bob">
-            <SurferSprite />
+            <SurferSprite grid={currentGrid} />
           </span>
         </span>
       </button>
