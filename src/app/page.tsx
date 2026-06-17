@@ -2,6 +2,7 @@ import { BreathingBlob } from "@/components/BreathingBlob";
 import { ColorSweepProvider } from "@/components/ColorSweep";
 import { ContactBanner } from "@/components/ContactBanner";
 import { Footer } from "@/components/Footer";
+import { PixelSurfer } from "@/components/PixelSurfer";
 import { PlayfulHeadline } from "@/components/PlayfulHeadline";
 import { ProjectCard } from "@/components/ProjectCard";
 import { profile } from "@/data/profile";
@@ -86,6 +87,7 @@ export default function Home() {
         </div>
 
         <ContactBanner />
+        <PixelSurfer />
         <Footer />
       </div>
     </ColorSweepProvider>
