@@ -53,10 +53,6 @@ export default async function GeoEnrichmentSuccessPage({
             <h1 className="mt-5 font-serif text-5xl leading-[0.98] tracking-[-0.04em] text-ink sm:text-7xl">
               Merci, on prépare ton accès.
             </h1>
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-ink-soft">
-              Cette page vérifie le paiement Stripe avant de demander à
-              Supabase un lien de téléchargement temporaire.
-            </p>
           </header>
 
           <div

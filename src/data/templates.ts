@@ -23,7 +23,7 @@ export const geoEnrichmentTemplate = {
   storagePathEnv: "TEMPLATE_GEO_ENRICHMENT_STORAGE_PATH",
   defaultStoragePath: "hubspot-geo-enrichment/geo-enrichissement-hubspot.zip",
   description:
-    "Ajoute automatiquement la région et le département sur tes contacts HubSpot, sans copier-coller ni tableur à côté.",
+    "Ajoute automatiquement la région et le département sur tes fiches Hubspot.",
   status: "available",
 } as const satisfies TemplateOffer & {
   launchPriceLabel: string;

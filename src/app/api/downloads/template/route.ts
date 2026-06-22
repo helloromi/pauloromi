@@ -51,8 +51,17 @@ export async function POST(request: Request) {
         });
 
     if (signedUrlError || !signedUrlData?.signedUrl) {
+      console.error("Supabase template signed URL failed", {
+        bucket: deliveryBucket,
+        path: template.storagePath,
+        message: signedUrlError?.message,
+        name: signedUrlError?.name,
+      });
+
       return NextResponse.json(
-        { error: "Impossible de générer le lien de téléchargement." },
+        {
+          error: `Impossible de générer le lien de téléchargement. Vérifie que le bucket privé "${deliveryBucket}" existe et que le fichier "${template.storagePath}" y est bien présent.`,
+        },
         { status: 500 },
       );
     }

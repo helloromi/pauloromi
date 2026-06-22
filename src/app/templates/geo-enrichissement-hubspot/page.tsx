@@ -80,7 +80,7 @@ export default function GeoEnrichmentTemplatePage() {
           >
             <p className="label text-pink">{geoEnrichmentTemplate.format}</p>
             <h1 className="mt-5 font-serif text-5xl leading-[0.98] tracking-[-0.04em] text-ink sm:text-7xl">
-              Ajoute région et département dans HubSpot, sans tableur à côté.
+              Enrichis ton CRM.
             </h1>
             <p className="mt-7 max-w-2xl text-lg leading-8 text-ink-soft sm:text-xl">
               {geoEnrichmentTemplate.description}
