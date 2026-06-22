@@ -20,6 +20,22 @@ npm run lint       # ESLint (flat config, eslint-config-next)
 npm run typecheck  # tsc --noEmit
 ```
 
+## Livraison des templates
+
+La page `/templates/geo-enrichissement-hubspot` utilise Stripe Checkout puis
+Supabase Storage privé pour livrer un lien signé après paiement.
+
+À configurer avant production :
+
+- Dans Stripe, régler l'URL de succès du Payment Link vers
+  `https://pauloromi.com/templates/geo-enrichissement-hubspot/success?session_id={CHECKOUT_SESSION_ID}`.
+- Dans Supabase, créer le bucket privé `template-deliveries` et y déposer le
+  fichier `hubspot-geo-enrichment/geo-enrichissement-hubspot.zip`.
+- Appliquer la migration Supabase dans `supabase/migrations`.
+- Renseigner les variables listées dans `.env.example`, notamment
+  `STRIPE_SECRET_KEY`, `STRIPE_GEO_ENRICHMENT_PRICE_ID` ou `STRIPE_GEO_ID`,
+  `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY`.
+
 ## Stack
 
 - Next.js 16 (App Router) + React 19 + Tailwind CSS 4

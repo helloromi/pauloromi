@@ -8,6 +8,7 @@ import { ProjectCard } from "@/components/ProjectCard";
 import { profile } from "@/data/profile";
 import { projects } from "@/data/projects";
 import { writing } from "@/data/writing";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -27,6 +28,12 @@ export default function Home() {
                   className="label flex gap-6 text-ink-soft"
                   aria-label="Profil"
                 >
+                  <Link
+                    href="/templates/geo-enrichissement-hubspot"
+                    className="link-underline tap-expand transition-colors hover:text-blue"
+                  >
+                    Templates
+                  </Link>
                   <a
                     href={profile.linkedin}
                     target="_blank"
