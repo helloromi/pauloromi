@@ -115,8 +115,18 @@ export async function POST(request: Request) {
       .single();
 
     if (error) {
+      console.error("Supabase template purchase upsert failed", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+
       return NextResponse.json(
-        { error: "Impossible d'enregistrer l'achat." },
+        {
+          error:
+            "Paiement validé, mais impossible d'enregistrer l'achat dans Supabase. Vérifie que la migration est appliquée et que SUPABASE_SERVICE_ROLE_KEY est bien une clé secrète/service role.",
+        },
         { status: 500 },
       );
     }
