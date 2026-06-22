@@ -23,7 +23,7 @@ export const geoEnrichmentTemplate = {
   storagePathEnv: "TEMPLATE_GEO_ENRICHMENT_STORAGE_PATH",
   defaultStoragePath: "hubspot-geo-enrichment/geo-enrichissement-hubspot.zip",
   description:
-    "Ajoute automatiquement la région et le département sur tes contacts HubSpot pour segmenter, router et prioriser sans saisie manuelle.",
+    "Ajoute automatiquement la région et le département sur tes contacts HubSpot, sans copier-coller ni tableur à côté.",
   status: "available",
 } as const satisfies TemplateOffer & {
   launchPriceLabel: string;
@@ -41,18 +41,18 @@ export const upcomingTemplateOffers: TemplateOffer[] = [
     format: "Blueprint Make + README",
     priceLabel: "9-19 €",
     description:
-      "Un scénario pour générer une numérotation propre, continue et exploitable dans tes outils de facturation.",
+      "Un petit automatisme pour numéroter tes factures proprement, sans y penser à chaque fois.",
     status: "soon",
   },
   {
     key: "membership_pipeline",
-    title: "Kit pipeline adhésion / inscription enrichi",
-    shortTitle: "Pipeline adhésion",
+    title: "Kit suivi des adhésions / inscriptions",
+    shortTitle: "Suivi adhésions",
     category: "Template",
     format: "Base Airtable + blueprint + templates Brevo + Loom",
     priceLabel: "49-149 €",
     description:
-      "Le socle opérationnel pour transformer des inscriptions en suivi clair, relances et segments activables.",
+      "Une base simple pour suivre les inscriptions, relancer les personnes et garder les infos au bon endroit.",
     status: "soon",
   },
   {
@@ -63,18 +63,18 @@ export const upcomingTemplateOffers: TemplateOffer[] = [
     format: "Base Airtable + blueprint + Loom",
     priceLabel: "39-99 €",
     description:
-      "Du billet à l'ops terrain : une base pour garder les participants, tâches et contenus au même endroit.",
+      "Une base pour préparer un événement sans disperser les participants, les tâches et les infos pratiques.",
     status: "soon",
   },
   {
     key: "asso_ops_bundle",
-    title: "Pack Ops Asso",
-    shortTitle: "Pack Ops Asso",
+    title: "Pack outils asso",
+    shortTitle: "Pack outils asso",
     category: "Template",
     format: "Bundle des templates",
     priceLabel: "99-149 €",
     description:
-      "Le bundle des briques Make, Airtable et Brevo pour structurer les opérations d'une petite association.",
+      "Un ensemble de modèles pour aider une petite association à mieux suivre ses actions du quotidien.",
     status: "soon",
   },
   {
@@ -85,7 +85,7 @@ export const upcomingTemplateOffers: TemplateOffer[] = [
     format: "Framework + installation",
     priceLabel: "Template 199 € ou forfait install 800-1 500 €",
     description:
-      "Un cadrage plus accompagné pour trier, prioriser et router des demandes avec un modèle IA.",
+      "Une aide plus accompagnée pour classer les demandes reçues et savoir lesquelles traiter en premier.",
     status: "premium",
   },
   {
@@ -96,7 +96,7 @@ export const upcomingTemplateOffers: TemplateOffer[] = [
     format: "Projet sur mesure + récurrent",
     priceLabel: "Sur devis",
     description:
-      "Un agent connecté à ta base de connaissance, conçu pour répondre aux demandes récurrentes avec garde-fous.",
+      "Un assistant connecté à tes documents pour répondre aux questions qui reviennent souvent.",
     status: "premium",
   },
 ];

@@ -1,5 +1,6 @@
 import { ContactBanner } from "@/components/ContactBanner";
 import { Footer } from "@/components/Footer";
+import { PixelSurfer } from "@/components/PixelSurfer";
 import { StripeLinkButton } from "@/components/StripeLinkButton";
 import {
   geoEnrichmentTemplate,
@@ -11,14 +12,14 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Géo-enrichissement HubSpot — Template Make.com",
   description:
-    "Un blueprint Make.com pour ajouter automatiquement région et département à tes contacts HubSpot, avec Loom et README.",
+    "Un modèle Make.com pour ajouter automatiquement région et département à tes contacts HubSpot, avec une vidéo d'explication.",
   alternates: {
     canonical: "/templates/geo-enrichissement-hubspot",
   },
   openGraph: {
     title: "Géo-enrichissement HubSpot",
     description:
-      "Ajoute région et département à tes contacts HubSpot avec un template Make.com prêt à brancher.",
+      "Ajoute région et département à tes contacts HubSpot avec un modèle Make.com prêt à adapter.",
     url: "/templates/geo-enrichissement-hubspot",
     siteName: "Paul Oromi",
     type: "website",
@@ -27,17 +28,17 @@ export const metadata: Metadata = {
 };
 
 const deliverables = [
-  "Blueprint Make.com prêt à importer",
-  "Tuto Loom pour comprendre le montage",
-  "README avec prérequis, variables et points de vigilance",
-  "Support léger par e-mail si quelque chose bloque au branchement",
+  "Un modèle Make.com prêt à importer",
+  "Une vidéo courte pour voir comment l'utiliser",
+  "Un guide simple avec les étapes à suivre",
+  "Un e-mail de support si quelque chose bloque",
 ];
 
 const useCases = [
-  "Segmenter par région sans normaliser les adresses à la main",
-  "Router des leads ou adhérents vers la bonne personne",
-  "Construire des listes HubSpot plus propres pour tes campagnes",
-  "Préparer des dashboards territoriaux lisibles",
+  "Classer tes contacts par région ou département",
+  "Éviter les copier-coller dans un tableur",
+  "Préparer des listes plus propres pour tes e-mails",
+  "Mieux comprendre d'où viennent tes contacts",
 ];
 
 const faqs = [
@@ -49,7 +50,7 @@ const faqs = [
   {
     question: "Est-ce que c'est une installation sur mesure ?",
     answer:
-      "Non, c'est un template autonome. Si tu veux que je l'installe ou l'adapte à ton CRM, on peut le traiter comme une mission séparée.",
+      "Non, c'est un produit à installer toi-même. Si tu préfères que je le mette en place avec toi, on peut en discuter séparément.",
   },
 ];
 
@@ -79,7 +80,7 @@ export default function GeoEnrichmentTemplatePage() {
           >
             <p className="label text-pink">{geoEnrichmentTemplate.format}</p>
             <h1 className="mt-5 font-serif text-5xl leading-[0.98] tracking-[-0.04em] text-ink sm:text-7xl">
-              Géo-enrichissement HubSpot, sans tableur de rattrapage.
+              Ajoute région et département dans HubSpot, sans tableur à côté.
             </h1>
             <p className="mt-7 max-w-2xl text-lg leading-8 text-ink-soft sm:text-xl">
               {geoEnrichmentTemplate.description}
@@ -109,7 +110,7 @@ export default function GeoEnrichmentTemplatePage() {
             <div>
               <p className="label text-pink">Ensuite</p>
               <h2 className="mt-4 font-serif text-4xl leading-tight text-ink">
-                Les prochains kits ops.
+                Les prochains produits.
               </h2>
             </div>
           </div>
@@ -159,6 +160,7 @@ export default function GeoEnrichmentTemplatePage() {
       </main>
 
       <ContactBanner />
+      <PixelSurfer />
       <Footer />
     </div>
   );
