@@ -43,14 +43,14 @@ const useCases = [
 
 const faqs = [
   {
-    question: "Comment se passe la livraison ?",
+    question: "Comment recevoir les templates ?",
     answer:
-      "Après paiement Stripe, tu reviens sur une page de confirmation qui vérifie l'achat et génère un lien de téléchargement temporaire.",
+      "Une page de conformation apparaîtra après paiement et vous génère un lien de téléchargement temporaire.",
   },
   {
-    question: "Est-ce que c'est une installation sur mesure ?",
+    question: "Comment être accompagné ?",
     answer:
-      "Non, c'est un produit à installer toi-même. Si tu préfères que je le mette en place avec toi, on peut en discuter séparément.",
+      "Si vous avez besoin d'aide pour installer ou utiliser le modèle, je peux vous accompagner. Nous discuterons ensemble des options qui vous conviennent le mieux.",
   },
 ];
 
@@ -95,8 +95,7 @@ export default function GeoEnrichmentTemplatePage() {
               Acheter {geoEnrichmentTemplate.priceLabel}
             </StripeLinkButton>
             <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
-              Paiement par Stripe. Livraison sécurisée après confirmation du
-              paiement.
+              Téléchargement direct après paiement.
             </p>
           </div>
         </div>
@@ -108,7 +107,7 @@ export default function GeoEnrichmentTemplatePage() {
         <section className="mx-auto max-w-4xl px-6 py-20 sm:px-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="label text-pink">Ensuite</p>
+              <p className="label text-pink">A venir</p>
               <h2 className="mt-4 font-serif text-4xl leading-tight text-ink">
                 Les prochains produits.
               </h2>
