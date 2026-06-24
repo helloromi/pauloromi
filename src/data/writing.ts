@@ -14,4 +14,13 @@ export const writing: IndexItem[] = [
     year: "2026",
     color: "pink",
   },
+  {
+    title: "Suivre ses adhésions sans se mentir",
+    description:
+      "On parle d'état civil, d'absences de structures formelles, et de modélisation.",
+    url: "https://pauloromi.substack.com/p/qui-sont-les-adherents",
+    tag: "Article",
+    year: "2026",
+    color: "pink",
+  }
 ];
