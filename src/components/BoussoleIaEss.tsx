@@ -3,11 +3,16 @@
 import { categories, fiches, risquesDonnees } from "@/data/fiches";
 import type { Categorie, Fiche, RisqueDonnees } from "@/data/fiches";
 import {
-  buildGoVerdict,
-  getVerdictForAnswer,
+  entetesProfil,
+  evaluerProfil,
   questionsBoussole,
+  reponsesPossibles,
 } from "@/lib/boussole-ia-ess";
-import type { ReponseBoussole, VerdictBoussole } from "@/lib/boussole-ia-ess";
+import type {
+  NiveauBoussole,
+  ProfilBoussole,
+  ReponseBoussole,
+} from "@/lib/boussole-ia-ess";
 import Link from "next/link";
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -31,7 +36,7 @@ function riskBadgeClass(risque: RisqueDonnees) {
   }
 }
 
-function verdictClass(niveau: VerdictBoussole["niveau"]) {
+function niveauCardClass(niveau: NiveauBoussole) {
   switch (niveau) {
     case "go":
       return "border-emerald-200 bg-emerald-50";
@@ -40,6 +45,18 @@ function verdictClass(niveau: VerdictBoussole["niveau"]) {
     case "stop":
       return "border-rose-200 bg-rose-50";
   }
+}
+
+function drapeauBadgeClass(niveau: "stop" | "cadre") {
+  return niveau === "stop"
+    ? "border-rose-200 bg-rose-50 text-rose-800"
+    : "border-amber-200 bg-amber-50 text-amber-800";
+}
+
+function reponseButtonClass(valeur: ReponseBoussole) {
+  return valeur === "oui"
+    ? "rounded-full border border-ink bg-ink px-6 py-3 text-sm font-semibold text-cream transition-transform hover:-translate-y-0.5"
+    : "rounded-full border border-line bg-cream px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-ink";
 }
 
 function filterButtonClass(isActive: boolean) {
@@ -140,7 +157,8 @@ function PromptCard({
 
 export function BoussoleIaEss() {
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [verdict, setVerdict] = useState<VerdictBoussole | null>(null);
+  const [reponses, setReponses] = useState<ReponseBoussole[]>([]);
+  const [profil, setProfil] = useState<ProfilBoussole | null>(null);
   const [isChoosingCategory, setIsChoosingCategory] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<Categorie | "tous">(
     "tous",
@@ -179,31 +197,35 @@ export function BoussoleIaEss() {
   function handleAnswer(reponse: ReponseBoussole) {
     if (!currentQuestion) return;
 
-    const blockingVerdict = getVerdictForAnswer(currentQuestion, reponse);
-    if (blockingVerdict) {
-      setVerdict(blockingVerdict);
-      setIsChoosingCategory(false);
+    const nextReponses = [...reponses];
+    nextReponses[questionIndex] = reponse;
+    setReponses(nextReponses);
+
+    const nextIndex = questionIndex + 1;
+    if (nextIndex < questionsBoussole.length) {
+      setQuestionIndex(nextIndex);
       return;
     }
 
-    const nextIndex = questionIndex + 1;
-    if (nextIndex >= questionsBoussole.length) {
+    const resultat = evaluerProfil(nextReponses);
+    if (resultat.niveau === "go") {
       setIsChoosingCategory(true);
       return;
     }
 
-    setQuestionIndex(nextIndex);
+    setProfil(resultat);
   }
 
   function chooseGoCategory(categorie: Categorie) {
     setCategoryFilter(categorie);
-    setVerdict(buildGoVerdict(categorie));
+    setProfil({ ...evaluerProfil(reponses), categorieSuggeree: categorie });
     setIsChoosingCategory(false);
   }
 
   function resetBoussole() {
     setQuestionIndex(0);
-    setVerdict(null);
+    setReponses([]);
+    setProfil(null);
     setIsChoosingCategory(false);
   }
 
@@ -300,33 +322,83 @@ export function BoussoleIaEss() {
         </div>
 
         <div className="mt-8">
-          {verdict ? (
-            <div
-              className={`rounded-[1.5rem] border p-5 sm:p-6 ${verdictClass(
-                verdict.niveau,
-              )}`}
-            >
-              <p className="label text-ink-soft">Verdict</p>
-              <h3 className="mt-3 font-serif text-3xl leading-tight text-ink">
-                {verdict.titre}
-              </h3>
-              <p className="mt-4 text-base leading-7 text-ink">
-                {verdict.resume}
-              </p>
-              <p className="mt-3 text-sm leading-7 text-ink-soft">
-                {verdict.explication}
-              </p>
+          {profil ? (
+            profil.niveau === "go" ? (
+              <div
+                className={`rounded-[1.5rem] border p-5 sm:p-6 ${niveauCardClass(
+                  "go",
+                )}`}
+              >
+                <p className="label text-ink-soft">Verdict</p>
+                <h3 className="mt-3 font-serif text-3xl leading-tight text-ink">
+                  {entetesProfil.go.titre}
+                </h3>
+                <p className="mt-4 text-base leading-7 text-ink">
+                  {entetesProfil.go.resume}
+                </p>
+                <p className="mt-3 text-sm leading-7 text-ink-soft">
+                  {entetesProfil.go.explication}
+                </p>
 
-              {verdict.categorieSuggeree ? (
-                <a
-                  href="#bibliotheque"
-                  className="mt-6 inline-flex rounded-full border border-ink bg-ink px-5 py-3 text-sm font-semibold text-cream"
+                {profil.categorieSuggeree ? (
+                  <a
+                    href="#bibliotheque"
+                    className="mt-6 inline-flex rounded-full border border-ink bg-ink px-5 py-3 text-sm font-semibold text-cream"
+                  >
+                    Voir les prompts utiles :{" "}
+                    {categories[profil.categorieSuggeree]}
+                  </a>
+                ) : null}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div
+                  className={`rounded-[1.5rem] border p-5 sm:p-6 ${niveauCardClass(
+                    profil.niveau,
+                  )}`}
                 >
-                  Voir les prompts utiles :{" "}
-                  {categories[verdict.categorieSuggeree]}
-                </a>
-              ) : null}
-            </div>
+                  <p className="label text-ink-soft">Profil de risque</p>
+                  <h3 className="mt-3 font-serif text-3xl leading-tight text-ink">
+                    {entetesProfil[profil.niveau].titre}
+                  </h3>
+                  <p className="mt-4 text-base leading-7 text-ink">
+                    {entetesProfil[profil.niveau].resume}
+                  </p>
+                  <p className="mt-3 text-sm leading-7 text-ink-soft">
+                    {profil.drapeaux.length}{" "}
+                    {profil.drapeaux.length > 1
+                      ? "points à regarder avant de décider."
+                      : "point à regarder avant de décider."}
+                  </p>
+                </div>
+
+                {profil.drapeaux.map((drapeau) => (
+                  <div
+                    key={drapeau.id}
+                    className={`rounded-[1.5rem] border p-5 sm:p-6 ${niveauCardClass(
+                      drapeau.niveau,
+                    )}`}
+                  >
+                    <span
+                      className={`rounded-full border px-3 py-1 text-xs font-semibold ${drapeauBadgeClass(
+                        drapeau.niveau,
+                      )}`}
+                    >
+                      {drapeau.niveau === "stop" ? "Bloquant" : "À cadrer"}
+                    </span>
+                    <h4 className="mt-4 font-serif text-2xl leading-tight text-ink">
+                      {drapeau.titre}
+                    </h4>
+                    <p className="mt-3 text-base leading-7 text-ink">
+                      {drapeau.resume}
+                    </p>
+                    <p className="mt-3 text-sm leading-7 text-ink-soft">
+                      {drapeau.explication}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )
           ) : isChoosingCategory ? (
             <div className="rounded-[1.5rem] border border-line bg-cream-deep p-5 sm:p-6">
               <p className="label text-blue">Dernier choix</p>
@@ -362,20 +434,16 @@ export function BoussoleIaEss() {
                 {currentQuestion.aide}
               </p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <button
-                  type="button"
-                  className="rounded-full border border-ink bg-ink px-6 py-3 text-sm font-semibold text-cream"
-                  onClick={() => handleAnswer("oui")}
-                >
-                  Oui
-                </button>
-                <button
-                  type="button"
-                  className="rounded-full border border-line bg-cream px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-ink"
-                  onClick={() => handleAnswer("non")}
-                >
-                  Non
-                </button>
+                {reponsesPossibles.map((option) => (
+                  <button
+                    key={option.valeur}
+                    type="button"
+                    className={reponseButtonClass(option.valeur)}
+                    onClick={() => handleAnswer(option.valeur)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
               </div>
             </div>
           )}

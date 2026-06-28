@@ -1,23 +1,38 @@
 import type { Categorie } from "@/data/fiches";
 
-export type ReponseBoussole = "oui" | "non";
+export type ReponseBoussole = "oui" | "non" | "je-ne-sais-pas";
 
-export type VerdictBoussole = {
+export type NiveauBoussole = "stop" | "cadre" | "go";
+
+export type Drapeau = {
   id: string;
-  niveau: "stop" | "cadre" | "go";
+  niveau: "stop" | "cadre";
   titre: string;
   resume: string;
   explication: string;
-  categorieSuggeree?: Categorie;
 };
 
 export type QuestionBoussole = {
   id: string;
   question: string;
   aide: string;
-  reponseBloquante: ReponseBoussole;
-  verdict: VerdictBoussole;
+  // Sujet du doute, réutilisé pour formuler le drapeau "Je ne sais pas".
+  sujet: string;
+  reponseBloquante: "oui" | "non";
+  drapeau: Drapeau;
 };
+
+export type ProfilBoussole = {
+  niveau: NiveauBoussole;
+  drapeaux: Drapeau[];
+  categorieSuggeree?: Categorie;
+};
+
+export const reponsesPossibles: { valeur: ReponseBoussole; label: string }[] = [
+  { valeur: "oui", label: "Oui" },
+  { valeur: "non", label: "Non" },
+  { valeur: "je-ne-sais-pas", label: "Je ne sais pas" },
+];
 
 export const questionsBoussole: QuestionBoussole[] = [
   {
@@ -25,8 +40,9 @@ export const questionsBoussole: QuestionBoussole[] = [
     question:
       "La tâche implique des données personnelles d'adhérents ou de bénéficiaires ?",
     aide: "Santé, situation sociale, coordonnées nominatives, récits de vie, dossiers individuels.",
+    sujet: "la présence de données personnelles",
     reponseBloquante: "oui",
-    verdict: {
+    drapeau: {
       id: "rouge-donnees-personnelles",
       niveau: "stop",
       titre: "ROUGE : pas en clair.",
@@ -38,11 +54,11 @@ export const questionsBoussole: QuestionBoussole[] = [
   },
   {
     id: "decision-fort-enjeu",
-    question:
-      "La sortie servira à une décision à fort enjeu humain ?",
+    question: "La sortie servira à une décision à fort enjeu humain ?",
     aide: "Sélection de bénéficiaires, décision RH, sanction, orientation importante, arbitrage qui affecte directement une personne.",
+    sujet: "l'enjeu humain de la décision",
     reponseBloquante: "oui",
-    verdict: {
+    drapeau: {
       id: "humain-decide",
       niveau: "cadre",
       titre: "L'IA assiste, elle ne tranche pas.",
@@ -56,8 +72,9 @@ export const questionsBoussole: QuestionBoussole[] = [
     id: "verification-possible",
     question: "Peux-tu vérifier la justesse de la sortie ?",
     aide: "Par exemple si le sujet touche au juridique, au comptable réglementaire, au médical ou à une règle financeur précise.",
+    sujet: "ta capacité à vérifier la sortie",
     reponseBloquante: "non",
-    verdict: {
+    drapeau: {
       id: "abstention-verification",
       niveau: "stop",
       titre: "Abstiens-toi pour cette tâche.",
@@ -72,12 +89,14 @@ export const questionsBoussole: QuestionBoussole[] = [
     question:
       "C'est une tâche rare où le coût de vérification, d'abonnement et d'empreinte dépasse le gain ?",
     aide: "Pense au temps de préparation, de relecture, de correction et au fait qu'il faudra peut-être former quelqu'un.",
+    sujet: "le rapport coût / gain de la tâche",
     reponseBloquante: "oui",
-    verdict: {
+    drapeau: {
       id: "sobriete-main",
       niveau: "stop",
       titre: "Fais-le à la main.",
-      resume: "Pour une tâche ponctuelle, c'est souvent plus sobre et plus rapide.",
+      resume:
+        "Pour une tâche ponctuelle, c'est souvent plus sobre et plus rapide.",
       explication:
         "L'IA devient utile quand le gain est net : temps économisé, qualité améliorée, apprentissage transférable. Sinon, elle ajoute une couche inutile.",
     },
@@ -86,8 +105,9 @@ export const questionsBoussole: QuestionBoussole[] = [
     id: "relation-humaine",
     question: "La relation humaine est le cœur de la tâche ?",
     aide: "Accompagnement, écoute, médiation, lien social, accueil d'une personne fragile.",
+    sujet: "la place de la relation humaine dans la tâche",
     reponseBloquante: "oui",
-    verdict: {
+    drapeau: {
       id: "relation-non-automatisee",
       niveau: "stop",
       titre: "N'automatise pas le cœur de la relation.",
@@ -101,8 +121,9 @@ export const questionsBoussole: QuestionBoussole[] = [
     question:
       "Y a-t-il un risque de déqualifier l'équipe ou de créer une dépendance non maîtrisée ?",
     aide: "Par exemple si l'outil remplace un savoir-faire clé, ou si personne ne sait expliquer, vérifier ou arrêter l'usage.",
+    sujet: "le risque de dépendance ou de déqualification",
     reponseBloquante: "oui",
-    verdict: {
+    drapeau: {
       id: "cadrer-usage",
       niveau: "cadre",
       titre: "Cadre l'usage avant de foncer.",
@@ -114,25 +135,60 @@ export const questionsBoussole: QuestionBoussole[] = [
   },
 ];
 
-export const verdictGoBase: VerdictBoussole = {
-  id: "go",
-  niveau: "go",
-  titre: "GO, avec garde-fous.",
-  resume: "La tâche se prête à un usage IA raisonnable.",
-  explication:
-    "Utilise l'IA comme brouillon, accélérateur ou sparring partner. Garde une relecture humaine et choisis un prompt adapté au niveau de risque des données.",
+export const entetesProfil: Record<
+  NiveauBoussole,
+  { titre: string; resume: string; explication: string }
+> = {
+  stop: {
+    titre: "STOP : ne sors pas l'IA pour ça.",
+    resume: "Au moins un point bloquant a été repéré.",
+    explication:
+      "Traite les points marqués « Bloquant » avant d'envisager le moindre usage de l'IA pour cette tâche.",
+  },
+  cadre: {
+    titre: "À cadrer avant d'y aller.",
+    resume: "Rien de bloquant, mais des points demandent un cadre clair.",
+    explication:
+      "Tu peux utiliser l'IA si tu poses d'abord les garde-fous listés ci-dessous.",
+  },
+  go: {
+    titre: "GO, avec garde-fous.",
+    resume: "Aucun drapeau levé : la tâche se prête à un usage IA raisonnable.",
+    explication:
+      "Utilise l'IA comme brouillon, accélérateur ou sparring partner. Garde une relecture humaine et choisis un prompt adapté au niveau de risque des données.",
+  },
 };
 
-export function getVerdictForAnswer(
-  question: QuestionBoussole,
-  reponse: ReponseBoussole,
-) {
-  return reponse === question.reponseBloquante ? question.verdict : null;
+function construireDrapeauIncertitude(question: QuestionBoussole): Drapeau {
+  return {
+    id: `incertitude-${question.id}`,
+    niveau: "cadre",
+    titre: "À clarifier avant d'avancer.",
+    resume: `Tu n'es pas sûr·e concernant ${question.sujet}.`,
+    explication:
+      "Tant que ce point n'est pas tranché, traite la tâche comme à risque : pose la question à l'équipe ou à une personne référente avant d'utiliser l'IA.",
+  };
 }
 
-export function buildGoVerdict(categorieSuggeree: Categorie): VerdictBoussole {
-  return {
-    ...verdictGoBase,
-    categorieSuggeree,
-  };
+export function evaluerProfil(reponses: ReponseBoussole[]): ProfilBoussole {
+  const drapeaux: Drapeau[] = [];
+
+  questionsBoussole.forEach((question, index) => {
+    const reponse = reponses[index];
+    if (reponse === question.reponseBloquante) {
+      drapeaux.push(question.drapeau);
+    } else if (reponse === "je-ne-sais-pas") {
+      drapeaux.push(construireDrapeauIncertitude(question));
+    }
+  });
+
+  const niveau: NiveauBoussole = drapeaux.some(
+    (drapeau) => drapeau.niveau === "stop",
+  )
+    ? "stop"
+    : drapeaux.length > 0
+      ? "cadre"
+      : "go";
+
+  return { niveau, drapeaux };
 }
